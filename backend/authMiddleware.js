@@ -1,16 +1,20 @@
-// backend/authMiddleware.js
-const admin = require("./firebase");
+const admin = require("./firebase");  // Import the Firebase instance
 
 const verifyToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Format: Bearer <token>
+  const authHeader = req.headers.authorization;
 
-  if (!token) return res.status(401).json({ message: "No token provided" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Missing or invalid token" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    req.user = decoded;
-    next();
-  } catch (err) {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.user = decodedToken;  // Attach user info to the request
+    next();  // Continue to the route
+  } catch (error) {
+    console.error("Token verification failed:", error);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

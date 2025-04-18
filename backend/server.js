@@ -1,19 +1,24 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
-const port = process.env.PORT || 5000;
-const appointmentRoutes = require("./routes/appointments");
+const appointmentsRoutes = require("./routes/appointments");
+const doctorRoutes = require("./routes/doctors");
+const admin = require("./firebase");  // Firebase admin SDK
+const verifyToken = require("./authMiddleware");  // Your token verification middleware
 
-// Middleware
+const app = express();
+const PORT = 5000;
+
+app.use("/api/doctors", doctorRoutes);
 app.use(cors());
 app.use(express.json());
-app.use("/api/appointments", appointmentRoutes);
 
-// Base route
+// Route middleware for verifying token
+app.use("/api/appointments", verifyToken, appointmentsRoutes); // Apply the middleware to appointment routes
+
 app.get("/", (req, res) => {
-  res.send("API is working!");
+  res.send("Healthcare Backend is running!");
 });
 
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
