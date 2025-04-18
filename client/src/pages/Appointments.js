@@ -1,3 +1,4 @@
+// client/src/pages/Appointments.js
 import React, { useEffect, useState } from "react";
 
 const Appointments = () => {
@@ -7,7 +8,10 @@ const Appointments = () => {
     const fetchAppointments = async () => {
       const token = localStorage.getItem("token");
 
-      if (!token) return;
+      if (!token) {
+        alert("Please log in to view your appointments.");
+        return;
+      }
 
       try {
         const response = await fetch("http://localhost:5000/api/appointments/my", {
@@ -22,10 +26,12 @@ const Appointments = () => {
         if (response.ok) {
           setAppointments(data);
         } else {
-          console.error("Failed to fetch appointments.");
+          console.error("❌ Failed to fetch appointments:", data.message);
+          alert("Failed to fetch appointments.");
         }
       } catch (error) {
-        console.error("Error fetching appointments:", error);
+        console.error("❌ Error fetching appointments:", error);
+        alert("An error occurred while fetching appointments.");
       }
     };
 
