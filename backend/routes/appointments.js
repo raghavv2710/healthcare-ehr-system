@@ -11,18 +11,19 @@ router.get("/my", verifyToken, (req, res) => {
   res.json(userAppointments);
 });
 
-// ❌ DELETE: Cancel user's appointment
+// DELETE: Cancel user's appointment
 router.delete("/:id", verifyToken, (req, res) => {
-  const appointmentId = parseInt(req.params.id);
+  const appointmentId = parseInt(req.params.id);  // ensure the ID is an integer
   const index = appointments.findIndex(app => app.id === appointmentId && app.userId === req.user.uid);
 
   if (index !== -1) {
     appointments.splice(index, 1);
     return res.json({ message: "Appointment canceled." });
   } else {
-    return res.status(403).json({ message: "Unauthorized or not found." });
+    return res.status(403).json({ message: "Unauthorized or appointment not found." });
   }
 });
+
 
 // 🆕 POST: Book new appointment
 router.post("/book", verifyToken, (req, res) => {

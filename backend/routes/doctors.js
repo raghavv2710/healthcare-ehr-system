@@ -1,3 +1,4 @@
+//backend/routes/doctors.js
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../authMiddleware");
@@ -17,7 +18,7 @@ router.post("/", verifyToken, (req, res) => {
   const user = req.user;
 
   // 👮 Check if user is an admin
-  if (user.email !== "admin@example.com") {
+  if (user.email !== "raghavv2710@gmail.com") {
     return res.status(403).json({ message: "Only admins can add doctors" });
   }
 

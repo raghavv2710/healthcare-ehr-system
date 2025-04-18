@@ -1,4 +1,4 @@
-const admin = require("./firebase");  // Import the Firebase instance
+const admin = require("./firebase");  // Firebase admin SDK
 
 const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
