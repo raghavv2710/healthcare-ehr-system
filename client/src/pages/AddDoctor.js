@@ -1,4 +1,3 @@
-// client/src/pages/AddDoctor.js
 import React, { useState } from "react";
 
 const AddDoctor = () => {
@@ -11,7 +10,7 @@ const AddDoctor = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please log in as admin first.");
+      alert("Please log in as an admin first.");
       return;
     }
 
@@ -28,42 +27,49 @@ const AddDoctor = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Doctor added successfully!");
+        setMessage("✅ Doctor added successfully!");
         setName("");
         setSpecialization("");
         console.log("Doctor added:", data.doctor);
       } else {
-        setMessage(data.message || "Failed to add doctor.");
+        console.warn("Add doctor failed:", data);
+        setMessage(`❌ ${data.message || "Failed to add doctor."}`);
       }
     } catch (error) {
-      console.error("Error:", error);
-      setMessage("An error occurred.");
+      console.error("Error sending request:", error);
+      setMessage("❌ An unexpected error occurred.");
     }
   };
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "2rem", maxWidth: "400px", margin: "0 auto" }}>
       <h2>Add New Doctor</h2>
       <form onSubmit={handleAddDoctor}>
-        <input
-          type="text"
-          placeholder="Doctor Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <br />
-        <input
-          type="text"
-          placeholder="Specialization"
-          value={specialization}
-          onChange={(e) => setSpecialization(e.target.value)}
-          required
-        />
-        <br />
-        <button type="submit">Add Doctor</button>
+        <div style={{ marginBottom: "1rem" }}>
+          <input
+            type="text"
+            placeholder="Doctor Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            style={{ width: "100%", padding: "0.5rem" }}
+          />
+        </div>
+        <div style={{ marginBottom: "1rem" }}>
+          <input
+            type="text"
+            placeholder="Specialization"
+            value={specialization}
+            onChange={(e) => setSpecialization(e.target.value)}
+            required
+            style={{ width: "100%", padding: "0.5rem" }}
+          />
+        </div>
+        <button type="submit" style={{ padding: "0.5rem 1rem" }}>
+          Add Doctor
+        </button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
     </div>
   );
 };

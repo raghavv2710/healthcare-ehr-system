@@ -1,14 +1,15 @@
-// client/src/pages/Dashboard.js
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Please log in first.");
+      navigate("/login");
       return;
     }
 
@@ -21,16 +22,15 @@ const Dashboard = () => {
       .then((data) => {
         if (data.uid) {
           setUserData(data);
-          console.log("Backend user info:", data);
         } else {
-          alert("Failed to fetch user data.");
+          navigate("/login");
         }
       })
       .catch((err) => {
         console.error("Error fetching user data:", err);
-        alert("An error occurred while fetching user info.");
+        navigate("/login");
       });
-  }, []);
+  }, [navigate]);
 
   return (
     <div>
@@ -39,6 +39,7 @@ const Dashboard = () => {
         <div>
           <p><strong>Email:</strong> {userData.email}</p>
           <p><strong>UID:</strong> {userData.uid}</p>
+          <p><strong>Role:</strong> {userData.role}</p>
         </div>
       ) : (
         <p>Loading user data...</p>

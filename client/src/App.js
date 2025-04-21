@@ -1,10 +1,10 @@
-//client/src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import { Navigate } from "react-router-dom";
 import BookAppointment from "./pages/BookAppointment";
 import Appointments from "./pages/Appointments";
 import AddDoctor from "./pages/AddDoctor";
@@ -12,6 +12,7 @@ import AddDoctor from "./pages/AddDoctor";
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/register" element={<Register />} />
@@ -20,6 +21,7 @@ function App() {
         <Route path="/book" element={<BookAppointment />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/add-doctor" element={<AddDoctor />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );
