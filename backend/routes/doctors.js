@@ -1,4 +1,3 @@
-//backend/routes/doctors.js
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../authMiddleware");
@@ -16,13 +15,14 @@ router.get("/", (req, res) => {
 // Add new doctor (admin-only)
 router.post("/", verifyToken, (req, res) => {
   const user = req.user;
+  console.log("Authenticated user:", user.email);
 
-  // 👮 Check if user is an admin
   if (user.email !== "raghavv2710@gmail.com") {
     return res.status(403).json({ message: "Only admins can add doctors" });
   }
 
   const { name, specialization } = req.body;
+
   if (!name || !specialization) {
     return res.status(400).json({ message: "Name and specialization are required" });
   }
@@ -34,7 +34,7 @@ router.post("/", verifyToken, (req, res) => {
   };
 
   doctors.push(newDoctor);
-  console.log("Doctor added:", newDoctor);
+  console.log("✅ Doctor added:", newDoctor);
   res.status(201).json({ message: "Doctor added", doctor: newDoctor });
 });
 

@@ -1,25 +1,30 @@
-//backend/server.js
 const express = require("express");
 const cors = require("cors");
-const appointmentsRoutes = require("./routes/appointments");
-const doctorRoutes = require("./routes/doctors");
-const admin = require("./firebase");  // Firebase admin SDK
-const verifyToken = require("./authMiddleware");  // Your token verification middleware
-
 const app = express();
-const PORT = 5000;
+const port = process.env.PORT || 5000;
 
-app.use("/api/doctors", doctorRoutes);
-app.use(cors());
+// Add this before your routes
+app.use(cors({
+  origin: "http://localhost:3000", // or "*" for all origins in dev
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
-// Route middleware for verifying token
-app.use("/api/appointments", verifyToken, appointmentsRoutes); // Apply the middleware to appointment routes
+// Routes
+const authRoutes = require("./routes/auth");
+const doctorRoutes = require("./routes/doctors");
+const appointmentRoutes = require("./routes/appointments");
+
+app.use("/api/auth", authRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Healthcare Backend is running!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`✅ Backend running on http://localhost:${port}`);
 });
