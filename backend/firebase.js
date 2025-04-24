@@ -1,4 +1,4 @@
-// backend/firebase.js
+// firebase.js
 const admin = require("firebase-admin");
 const serviceAccount = require("./firebaseServiceAccountKey.json");
 

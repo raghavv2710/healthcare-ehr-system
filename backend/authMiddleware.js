@@ -1,27 +1,23 @@
-// backend/authMiddleware.js
-const admin = require("firebase-admin");
+// authMiddleware.js
+const admin = require("./firebase");
 
-const verifyToken = async (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(403).json({ message: "No token provided" });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    req.user = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      role: decodedToken.role || "patient",
-    };
+    req.user = decodedToken;
     next();
-  } catch (err) {
-    console.error("Token verification failed:", err);
-    return res.status(403).json({ message: "Invalid token" });
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    res.status(401).json({ message: "Unauthorized" });
   }
 };
 
-module.exports = verifyToken;
+module.exports = authenticate;
