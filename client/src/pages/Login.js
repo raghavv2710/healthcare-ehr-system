@@ -1,77 +1,97 @@
+// src/components/auth/Login.js
 import React, { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState("patient"); // Default to "patient"
   const navigate = useNavigate();
-  const auth = getAuth(); // ✅ Initialize Firebase Auth
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      const token = await res.user.getIdToken();
-
-      if (!token) throw new Error("Token not generated.");
-
-      localStorage.setItem("token", token);
-
-      // 🔐 Get user role
-      const userRes = await fetch("http://localhost:5000/api/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const userData = await userRes.json();
-
-      if (userRes.status !== 200 || !userData.uid) {
-        throw new Error("Failed to fetch user info.");
-      }
-
-      // 🎯 Redirect based on role
-      if (userData.role === "admin") {
-        navigate("/add-doctor");
-      } else {
-        navigate("/dashboard");
-      }
-    } catch (err) {
-      console.error("Login failed:", err.code, err.message);
-      alert("Login failed. Please check your credentials.");
-    } finally {
-      setLoading(false);
+      const response = await axios.post("/api/login", { email, password });
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", role); // Save the selected role
+      navigate(`/${role}/dashboard`); // Redirect to the corresponding dashboard
+    } catch (error) {
+      console.error("Login failed", error);
     }
   };
 
   return (
-    <div>
+    <div style={styles.container}>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
           value={email}
-          required
           onChange={(e) => setEmail(e.target.value)}
+          required
+          style={styles.input}
         />
-        <br />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          required
           onChange={(e) => setPassword(e.target.value)}
+          required
+          style={styles.input}
         />
-        <br />
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <div>
+          <label>
+            <input
+              type="radio"
+              value="patient"
+              checked={role === "patient"}
+              onChange={() => setRole("patient")}
+            />
+            Patient
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="doctor"
+              checked={role === "doctor"}
+              onChange={() => setRole("doctor")}
+            />
+            Doctor
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="admin"
+              checked={role === "admin"}
+              onChange={() => setRole("admin")}
+            />
+            Admin
+          </label>
+        </div>
+        <button type="submit" style={styles.button}>Login</button>
       </form>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    marginTop: "50px",
+    textAlign: "center",
+  },
+  input: {
+    margin: "10px",
+    padding: "10px",
+    width: "200px",
+  },
+  button: {
+    padding: "10px 20px",
+    fontSize: "16px",
+    cursor: "pointer",
+  },
 };
 
 export default Login;
